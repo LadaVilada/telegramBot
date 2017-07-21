@@ -1,6 +1,7 @@
-package org.vvpro.pbot.bot;
+package ladavilada;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ladavilada.util.ConfigUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -8,19 +9,15 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.objects.payments.LabeledPrice;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Created by vbobina on 12.07.2017.
  */
 public class Main {
+    private final static Logger LOGGER = Logger.getLogger(Main.class);
 
     public static final String BOT_BASEURL = "https://api.telegram.org/bot";
     public static final String BOT_TOKEN = "420132414:AAFDyDtqIA5kEU77Pe0LDDnI2ZbDYLUz6Zw";
@@ -56,16 +54,15 @@ public class Main {
         try {
 //            String url = getBaseUrl() + method.getMethod();
 //            https://api.telegram.org/bot420132414:AAFDyDtqIA5kEU77Pe0LDDnI2ZbDYLUz6Zw/getUpdates
+            String tmp = ConfigUtil.getProperty(BOT_BASEURL);
             String url = getBaseUrl() + "sendMessage"+ "?chat_id=-240537847&text=uuuh!";
             HttpPost httppost = new HttpPost(url);
             httppost.setConfig(requestConfig);
             httppost.addHeader("content-type", "application/x-www-form-urlencoded");
-//            httppost.setEntity(new StringEntity("details={\"name\":\"myname\",\"age\":\"20\"} "));
-            try (CloseableHttpResponse response = httpclient.execute(httppost)) {
+            CloseableHttpResponse response = httpclient.execute(httppost);
                 HttpEntity ht = response.getEntity();
                 BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-                responseContent = EntityUtils.toString(buf, StandardCharsets.UTF_8);
-            }
+//                responseContent = EntityUtils.toString(buf, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new TelegramApiException("Unable to execute method", e);
         }
@@ -92,7 +89,7 @@ public class Main {
                 .setSSLHostnameVerifier(new NoopHostnameVerifier())
                 .setConnectionTimeToLive(70, TimeUnit.SECONDS)
                 .setMaxConnTotal(100)
-                .setProxy(new HttpHost("127.0.0.1",1234))
+                .setProxy(new HttpHost("proxy.t-systems.ru", 3128, "http"))
                 .build();
 
 //        requestConfig = new Re;
